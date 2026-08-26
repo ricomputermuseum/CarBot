@@ -1,0 +1,147 @@
+<!DOCTYPE html lang="en">
+<head>
+      <meta charset="UTF-8">
+      <title>Robot Joystick</title>
+      <style>
+        body { font-family: Arial; text-align: center; background: #111; color: white; }
+        #joystick {
+          width: 800px;
+          height: 800px;
+          background: #333;
+          border-radius: 50%;
+          position: relative;
+          margin: 50px auto;
+          touch-action: none;
+        }
+        #stick {
+          width: 144px;
+          height: 144px;
+          background: #00ffcc;
+          border-radius: 50%;
+          position: absolute;
+          left: 328px;
+          top: 328px;
+        }
+      </style>
+</head>
+<body>
+   <h2 id="rname"> Joystick</h2>
+   <div id="joystick">
+     <div id="stick"></div>
+   </div>
+   <p>X: <span id="x">0</span> | Y: <span id="y">0</span></p>
+   
+<script>
+
+// ------------  Create Variables ---------------
+const fulldia   = 800;   // diameter of outer circle in pixels
+const stickdia  = 144;   // diamter of joystick (inner circle) in pixels
+const joystick  = document.getElementById("joystick");
+const stick     = document.getElementById("stick");
+const xDisplay  = document.getElementById("x");
+const yDisplay  = document.getElementById("y");
+const radius    = (fulldia/2)-(stickdia/2)   // calculate radius
+const stickcntr = radius;      // stick center, zeroxpos & zerotpos
+const zeroxpos  = stickcntr;   //     is same as radius
+const zeroypos  = stickcntr;   // 
+const pixvalu   = 10/radius;  // pixel value to make it to 10% relative (values from -9 to 9)
+
+let dragging    = false;
+let oldx        = 0;         // initialize current x & Y pointers
+let oldy        = 0;
+let pkt         = 0;         // init packet count
+let parked      = true;
+
+// * Send formatted data from page to server
+function sendData(x, y) {    // X & Y values are -10 to 10 with 0 beng center
+
+     if ((x == 0 && y == 0) || (x != oldx) || (y != oldy)) {   // send data ONLY if changed or BOTH vaues are zero
+        console.log(x,y,pkt)   // log data
+        oldx = x;  // save values
+        oldy = y;
+     
+        try {
+           const response = fetch(`/move?x=${x}&y=${y}&p=${pkt}`)   // send data to server
+           pkt++;     // increment packet count 
+        } catch (error) {
+          console.error('Fetch error details:',error);
+        }
+     }
+}
+
+// * Pointer down Event
+joystick.addEventListener("pointerdown", e => {
+   dragging = true;
+   joystick.setPointerCapture(e.pointerId);
+});
+
+// * Pointer released Event
+// * Reset joystick to center
+joystick.addEventListener("pointerup", e => {
+    dragging             = false;
+    stick.style.left     = `${zeroxpos}px`;  // needs to be a pixel value
+    stick.style.top      = `${zeroypos}px`;
+    xDisplay.textContent = 0;                // show it on screen
+    yDisplay.textContent = 0;    
+    sendData(0, 0);    // ALl stop
+    sendData(0, 0)     // send a few times to make sure
+    sendData(0, 0)     // it stops!!
+    parked               = true;
+});
+
+// * Event when pointer is down & moving 
+// * Everything is referenced from center point 
+joystick.addEventListener("pointermove", e => {
+   if (!dragging) return;
+
+   // Get curent mouse pointer 
+   let rect       = joystick.getBoundingClientRect();
+   let x          = e.clientX - rect.left - fulldia/2;   // obtaint mouse pointer coords
+   let y          = e.clientY - rect.top  - fulldia/2;
+   let distance   = Math.min(radius, Math.hypot(x, y));  // calculate distance to edge of outer circle
+   let angle      = Math.atan2(y, x);                    // calculate angle from center to current position
+   let posX       = distance * Math.cos(angle);   // recalculate on screen position for
+   let posY       = distance * Math.sin(angle);   //      X & Y positions
+
+   // ------ Update on the screen --------
+   stick.style.left = `${posX + zeroxpos}px`;
+   stick.style.top  = `${posY + zeroypos}px`;
+
+   let normx        = Math.round((posX / radius) * stickcntr);
+   let normy        = Math.round((posY / radius) * stickcntr);
+
+   let pcntx        = Math.round(pixvalu * normx);  // make X & Y coords range -10 to 10 with 0 being center
+   let pcnty        = Math.round(pixvalu * normy);
+   
+   pcnty            = 1-(pcnty+1);   //  invert y data
+   
+   xDisplay.textContent = pcntx;     // show x & Y on screen at bottom
+   yDisplay.textContent = pcnty;
+    
+   sendData(pcntx, pcnty);     // send data to server 
+   parked           = false;
+});
+
+async function setrname() {     
+      const response = await fetch(`/rname?`);
+      data = await response.text(); 
+//      robot_name = String(data).charAt(0).toUpperCase() + String(data).slice(1);
+      document.getElementById("rname").innerHTML = data + " Joystick";
+      return;
+}
+
+// One time code when web browser connects
+window.addEventListener('load', (event) => {
+
+  setrname();
+  const intervalID = setInterval(() => {
+        if (parked) {
+           sendData(0, 0);  // stay awake once every 3 seconds if parked
+        }
+  }, 3000)      
+  console.log('The page and all resources have loaded.'); 
+});
+
+</script>
+</body>
+</html>

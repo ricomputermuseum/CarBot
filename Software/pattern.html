@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Pattern file Upload</title>
+  <h1>Pattern upload</h1>
+</head>
+<body>
+
+<input type="file" id="fileBrowser" accept=".txt" />
+
+<pre id="log"></pre>
+
+<script>
+
+const fileBrowser = document.getElementById('fileBrowser');
+const log = document.getElementById('log');
+
+function write(msg) {
+  log.textContent += msg + '\n';
+}
+
+fileBrowser.addEventListener('change', async (event) => {
+  const file = event.target.files[0];
+
+  if (!file) return;
+
+  write(`Selected file: ${file.name}`);
+
+  const text  = await file.text();
+  const lines = text.split(/\r?\n/);
+
+  for (let i = 0; i < lines.length; i++) {
+      const linex = lines[i];
+
+      write(`Line ${i + 1}: ${linex}`);
+
+    // wait for server response before sending next line
+      const response = await fetch('/upload-line', {
+            method: 'POST',
+            headers: {
+                      'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+            lineNumber: i + 1,
+            line: linex
+            })
+      });  
+      
+      console.log(response.length)
+      console.log(response);
+   // Wait for server to reply. 
+//      if response[0] == "!", then there was an error, display error and stop 
+      const reply = await response.text();
+      console.log(reply);
+      if (reply[0] == "!") {          // is this an error server is sending back?
+          write(`Server replied: ${reply}`);  // yes - show it
+          i = lines     // send no more data
+      };
+  };
+
+  write('Finished');
+  
+  // Tell server we are done sending. Send ETX (end of txt)
+  const response = await fetch('/upload-line', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+            line: "ETX" 
+      })
+    });
+  
+  // server will do a final check  
+  const reply = await response.text(); 
+  write(`Server replied: ${reply}`);
+  if (relply[0] == "!") {          // this is an error the server is sending back
+     write(`Server replied: ${reply}`)
+  }   
+});
+
+</script>
+</body>
+</html>
