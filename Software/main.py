@@ -23,17 +23,17 @@
 # * Currently the program can control the robot in 4 different modes 
 # * 1 - Remote control. By using any web browswer, the user can control the car via
 # *     a joystick type of control   
-# * 2 - Line following. By drawing a dark line with a magic marker, the robot will
+# * 2 - Follow a Pattern. The robot will move along an upload pattern, using various
+# *     pattern plans. The user can upload a pattern to the robot where it will stay
+# *     until it is overwritten by a new one. Read documentation for the various
+# *     commands you can give it
+# * 3 - Line following. By drawing a dark line with a magic marker, the robot will
 # *     follow alog the line (not yet implimented)
-# * 3 - Collisin avoidence. With an ultrasonic module, the car will autonumously
+# * 4 - Collision avoidence. With an ultrasonic module, the car will autonumously
 # *     drive on the ground avoiding any obsticals it encounters. Using the Ultrasonic
 # *     sensor, it senses the distence of an object, stops, turns, and detects
 # *     if it can move in that direction. if not, it turns again, until no object
 # *     is in its path. It will ten continue forward until another object is detected
-# * 4 - Follow a Pattern. The robot will move along an upload pattern, using various
-# *     pattern plans. The user can upload a pattern to the robot where it will stay
-# *     until it is overwritten by a new one. Read documentation for the various
-# *     commands you can give it
 # * Mode selection is done via an onboard pushbutton on the custom RICM board.
 # * Modes can be changed at anytime
 # *
@@ -93,7 +93,13 @@ while True:
        rc = Remote.RemoteMode(Platform.motor)         # yes - do web remote control
        print("Remote RC:",rc)
 
-# -------------- MODE-2(Line follow) ------------------
+# -------------- MODE-2(Patt Follow) ------------------         
+     elif globalv.new_mode == globalv.PATTERN:
+          print("Entering PATTERN mode.")
+          rc = Pattern.get_pattern()
+          print("Pattern RC:",rc)
+
+# -------------- MODE-3(Line follow) ------------------
      elif globalv.new_mode == globalv.LINE_FOLLOW:
          if once is False:
             if LF is True:
@@ -102,7 +108,7 @@ while True:
                ricmmode.flashit()      # we can rapid flash the led here
                once = True
          
-# -------------- MODE-3(Coll Avoid) ------------------
+# -------------- MODE-4(Coll Avoid) ------------------
      elif globalv.new_mode == globalv.COLLISION_AVOID: 
          if once is False:
             print (Ultra) 
@@ -116,13 +122,6 @@ while True:
                   print("Ultrasonic module not connected") 
                ricmmode.flashit()      # NO - we can rapid flash the led here
             once = True   
-         
-# -------------- MODE-4(Patt Follow) ------------------         
-     elif globalv.new_mode == globalv.PATTERN:
-          print("Entering PATTERN mode.")
-          rc = Pattern.get_pattern()
-          print("Pattern RC:",rc)
-
      else:
          print("Unknown mode. Mode:", globalv.new_mode)  # should never happen.....
          time.sleep(5)
