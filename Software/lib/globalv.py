@@ -20,9 +20,9 @@ debug           = False           # used to display variables during debugging
 
 # --------------- Modes of operation DO NOT CHANGE THESE VALUES!! These are constants! ------
 REMOTE          = 1
-LINE_FOLLOW     = 2
-COLLISION_AVOID = 3
-PATTERN         = 4
+PATTERN         = 2
+LINE_FOLLOW     = 3
+COLLISION_AVOID = 4
 MAX_MODE        = 4
 # -------------------------------------------------------------------------------------------
 
