@@ -9,16 +9,20 @@
 # * and moves the motors based on distance calc
 # *
 # * Return codes from this module:
-# *    NORMAL =  0
+# *    NORMAL                  =  0 
+# *    ULTRASONIC_SENSOR_ERROR = -1
+# *
 # ***********************************************************************************
 from machine import Pin, Timer, PWM
 import time
 import L9110 as motor
 import globalv
 import random
+led2   = Pin("LED", Pin.OUT)
 
 # return codes
 NORMAL = 0
+ULTRASONIC_SENSOR_ERROR = -1
 
 ult = NORMAL
 
@@ -27,32 +31,37 @@ TRIG = Pin(17,Pin.OUT)
 ECHO = Pin(16,Pin.IN)
 
 def init():
-    # if button is not pressed
-    while globalv.button_pressed is False:
-#        globalv.cur_mode = globalv.new_mode
-        
-        # if globalv.button_pressed is False and ult == NORMAL:
-        
-        # calc distance
-        distance = distance_calc(TRIG, ECHO)
-        print("Distance:", distance)
-        if distance == 0:   # Ultrasonic not installed
-           stop_movement()  # just in cae we were moving
-           return -1
+    while globalv.new_mode == globalv.COLLISION_AVOID:
+        # if button is not pressed
+        if globalv.button_pressed is False:
+            globalv.cur_mode = globalv.new_mode
+            
+            # calc distance
+            distance = distance_calc(TRIG, ECHO)
+            print(distance)
 
-        # make a movement decision
-        distance_decision(distance)
-        c = random.randint(1,10)
-        
-        # send to movement function depending on random number
-        if c % 2 == 0:
-            left_movement()
+            if distance == "ERROR":
+                # return error code back to main
+                return -1
+
+            # make a movement decision
+            distance_decision(distance)
+            c = random.randint(1,10)
+            
+            # send to movement function depending on random number
+            if c % 2 == 0:
+                left_movement()
+            else:
+                right_movement()
+            
+            # give time for pico to run logic again
+            time.sleep_ms(300)
         else:
-            right_movement()
-    else:
-        # if globalv.button_pressed is True:
-        stop_movement()
-        return 0   # NORMAL return code
+            # if globalv.button_pressed is True:
+            # stop moving the robot
+            stop_movement()
+            # return normal code
+            return 0
     
 def distance_calc(TRIG, ECHO):
     # calculate current distance
@@ -62,15 +71,35 @@ def distance_calc(TRIG, ECHO):
     time.sleep_us(10)
     TRIG.low()
     
-    timeout_limit = time.ticks_us() + 30000  # 30ms window limit use for timeout
+    # create cutoff point in case module is not attached.
+    # 30k microseconds is the max sensor range
+    timeout_limit = 30000
+    
+    # initialize wait timer
+    start_wait = time.ticks_us()
     
     while ECHO.value() == 0:
-          signal_off = time.ticks_us()
-          if time.ticks_us() > timeout_limit:
-             return 0  # Pin stayed LOW; sensor is missing/disconnected, return NO Distance
+        # print("echo value 0")
+        signal_off = time.ticks_us()
+        # print(signal_off)
+        # print("stuck")
     
-    while ECHO.value() == 1:    
+    while ECHO.value() == 1:
+        # if statement to handle module issues
         signal_on = time.ticks_us()
+        if time.ticks_diff(signal_on, start_wait) > timeout_limit:
+            print("error!")
+            # stop robot in case its moving
+            stop_movement()
+            # flash led
+            for i in range(100):
+                # print("error")
+                led2.value(1)
+                time.sleep_ms(150)
+                led2.value(0)
+                time.sleep_ms(150)
+            # return
+            return "ERROR"
     
     time_passed = signal_on - signal_off
     # do conversion to get distance in cm
@@ -110,10 +139,11 @@ def distance_decision(distance):
 # function for robot moving slightly to the left
 def left_movement():
     motor.drive(-10, 75)
-    
 # function for robot moving lightly to the right
 def right_movement():
     motor.drive(30, 75)
 
+# stopping robot so we can exit back to main loop
 def stop_movement():
     motor.drive(0, 0)
+
