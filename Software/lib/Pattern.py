@@ -1,39 +1,40 @@
 #^ cmd_pattern.py -----------------------------------------------------------------------
-# *                      Pattern follow Module
-# * Version: 1.0
-# * Date:    6/17/2026
-# * By:      Ray Young
-# * For:     Rhode Island Computer Museum (RICM)
-# *
-# * Logic: get_pattern() in this module is the main function that gets  
-# *        called from the main module
-# *        When called, it sets up a WiFi Access Point(AP), DNS server, HTTP server
-# *        The DNS server will intercept ALL DNS requests and ONLY respond to
-# *        "ricm.run" as defined in globalv.py module.
-# *        The user MUST connect to the AP whos SSID/Password are defned in globalv.py
-# *        Once connected to the AP, the user opens a web browser, and enters
-# *        "robot.run" into the URL line.
-# *        The HTTP server then responds with the root web page (pttern.html) standard
-# *        file selection dialog. As the file is loading, each line is sent to this
-# *        module for validation. If any error is encountered, the error is displayed   
-# *        and pattern load is terminated.
-# *        upon sucessful load the robot will execute the pattern file repeatedly.
-# *
-# * Return codes are implimented as a table that can be accessed by name or code via
-# * error_func(valu). if you sed a valu that is text, it will reply with a code. If a
-# * code is sent, function will return the test of the error  
-# *
-# * Entry Point:   get_pattern()
-# *
-# * Check return_codes.py for all available return codes from this module
-# *
-# * Dependants: json  (std uPython)
-# *             globalv
-# *             cmd_GVar  as G
-# *             cmd_table as CT
-# *             web_stuff as WS
-# *             ricmboard as Plaform
-# *             gc (std uPython)
+# *                      Pattern follow Module                                          *
+# * Version: 1.0                                                                        *
+# * Date:    6/17/2026                                                                  *
+# * By:      Ray Youg                                                                   *
+# * For:     Rhode Island Computer Museum (RICM)                                        *
+# *                                                                                     *
+# * Logic: get_pattern() in this module is the main function that gets                  *  
+# *        called from the main module                                                  *
+# *        When called, it sets up a WiFi Access Point(AP), DNS server, HTTP server     *
+# *        The DNS server will intercept ALL DNS requests and ONLY respond to           *
+# *        "ricm.run" as defined in globalv.py module.                                  *
+# *        The user MUST connect to the AP whos SSID/Password are defned in globalv.py  *
+# *        Once connected to the AP, the user opens a web browser, and enters           *
+# *        "ricm.run" into the URL line.                                                *
+# *        The HTTP server then responds with the root web page (pttern.html) standard  *
+# *        file selection dialog. As the file is loading, each line is sent to tihs     *
+# *        module for validation. If any error is encountered, the error is displayed   *   
+# *        and pattern load is terminated.                                              *
+# *        upon sucessful load the robot will execute the pattern file repeatedly.      *
+# *                                                                                     *
+# * Return codes are implimented as a table that can be accessed by name or code via    *
+# * error_func(valu). if you sed a valu that is text, it will reply with a code. If a   *
+# * code is sent, function will return the test of the error                            *  
+# *                                                                                     *
+# * Entry Point:   get_pattern()                                                        *
+# *                                                                                     *
+# * Check return_codes.py for all available return codes from this module               *
+# *                                                                                     *
+# * Dependants: json  (std uPython)                                                     *
+# *             globalv                                                                 *
+# *             cmd_GVar  as G                                                          *
+# *             cmd_table as CT                                                         *
+# *             web_stuff as WS                                                         *
+# *             ricmboard as Plaform                                                    *
+# *             gc (std uPython)                                                        *
+# *                                                                                     *
 #~ --------------------------------------------------------------------------------------
 
 
@@ -42,7 +43,7 @@ import globalv                 # RTY Global variables across all modules
 import cmd_GVar as G           # RTY Pattern variables
 import cmd_table as CT         # RTY Command tables 
 import web_stuff as WS         # RTY Web_Stuff module (routines for AP,DNS,HTTP)
-import ricmboard as Platform   # which platform are we using?
+#import ricmboard as Platform   # which platform are we using?
 import gc                      # STD Garbage collection
 
 # ======================================================
@@ -93,6 +94,7 @@ NORMAL = error_func("NORMAL")    # defailt return code
 UP      = True
 DOWN    = False
 line_no = 1
+pattern_ready = False     # will be true when a valid pattern is loaded
 
 #^ get_cmd ====================================================================
 #   Isolate alpha text from string. end when next char is non-apha  
@@ -135,15 +137,14 @@ def check_command(line):
     line2         = line.lstrip()           # strip off leading spaces (if any)
     index2        = line2.find("#")         # check for the beginning of a comment
     new_line      = line2.rstrip('\r\n')    # strip off ending CR/LF
-    if globalv.debug is True: 
-       print("(004)",index2, len(new_line), new_line)
+    
+    if globalv.debug is True: print("(004)",index2, len(new_line), new_line)
 
     if index2 != 0 and len(new_line) > 0:    # ignore line if comment at beginning of line or empty line
            #************************************
            #  EXTRACT THE COMMAND FROM LINE
            #************************************
-       if globalv.debug is True: 
-          print("(005) - should NOT get here on a comment...")
+       if globalv.debug is True:   print("(005) - should NOT get here on a comment...")
           
        cmd_len = get_cmd(line2)     # obtain the entire command, value returned is length of command
        if cmd_len == 0:    # got a "command"
@@ -185,8 +186,7 @@ def check_command(line):
                          x = nxt_idx   # we are done
 
                 vnumb = vstring[:nxt_idx]   # attempt to extract the numeric variable from command line
-                if globalv.debug is True:
-                   print("vnumb:",vnumb)
+                if globalv.debug is True: print("vnumb:",vnumb)
                    
                 if len(vnumb) == 0:  # was a variable supplied??
                    rc = error_func("VARIABLE_EXPECTED")  # no, we were expecting a variable
@@ -236,8 +236,7 @@ def check_command(line):
                 else:                 
                    G.in_block = 0               # we are free to define another block
     else:
-       if globalv.debug is True: 
-          print("(006) - Got a comment line...") 
+       if globalv.debug is True: print("(006) - Got a comment line...") 
        G.cmd_nmemonic = ""      # do not add commented lines
     return rc
 
@@ -279,8 +278,7 @@ def run_pattern(begin_idx): # typically begin at offset 0
           elif G.cmd_nmemonic == "EB":
              G.prv_pat_ptr  = G.nxt_pat_ptr          
 
-          if globalv.debug is True: 
-             print("After RL/EB check:",G.prv_pat_ptr,G.cur_pat_ptr,G.nxt_pat_ptr)    
+          if globalv.debug is True: print("After RL/EB check:",G.prv_pat_ptr,G.cur_pat_ptr,G.nxt_pat_ptr)    
                       
           G.nxt_pat_ptr  = G.cmd_function(G.ivar)  # do the function in cmd_func.py, include a variable, even if not used
               
@@ -317,8 +315,7 @@ def validate_line(line):
        #************************
        #    COMMAND IS VALID, ATTEMPT TO ADD TO PATTERN LINE
        #************************
-       if globalv.debug is True: 
-          print("(007) - Command valid....",G.cmd_nmemonic)
+       if globalv.debug is True: print("(007) - Command valid....",G.cmd_nmemonic)
           
        if len(G.cmd_nmemonic) > 0:
           G.pattern = G.pattern + chr(G.cmd_table_idx)   # add at least, the command, to pattern string
@@ -356,8 +353,7 @@ def send_204():
 # ------------------------------------------------------------------------------------------
 def send_root():
 
-    if globalv.debug:
-       print("Sending root page: ")
+    if globalv.debug: print("Sending root page: ")
     
 # ------ header info ALWAYS has an empty line in the header before Webpage contents 
 # ------ Web page is already loaded into memory as wpage and its length as pagel both global variables
@@ -416,6 +412,7 @@ def handle_web(conn):
     portal_request = True   # this is a flag if browswer asks for root page before we ask
     NORMAL  = error_func("NORMAL")
     rc      = NORMAL
+    pattern_ready = False    # set this to False when table is being loaded
     while rc == NORMAL and globalv.button_pressed is False and more is True:
           try:                
              request = conn.recv(1024)   # receive data. Data will be formatted to utf-8
@@ -425,23 +422,20 @@ def handle_web(conn):
                  more = False
                  rc = error_func("UNDEFINED_ERROR")
 #                 send_500()
-          if globalv.debug is True:
-             print("(001) Got data......",request)
+          if globalv.debug is True: print("(001) Got data......",request)
           
           if not request:   # if no data obtained(len = 0), the connection was closed. stop pressinng
                  rc = error_func("BROWSER_CLOSED")
                    
           elif globalv.Robot_URL in request:   # only want to hear from our URL
-               if globalv.debug is True: 
-                  print("got proper host name")
+               if globalv.debug is True: print("got proper host name")
                       
                request_str = request.decode('utf-8')
                parts       = request_str.split("\r\n\r\n")
                if "GET / " in request_str or "GET /index.html" in request_str:  # requesting root page
-                  if globalv.debug:
-                     print("Requesting Root document")
+                  if globalv.debug: print("Requesting Root document")
                   
-                  if "Connectio: close" in request_str:
+                  if "Connection: close" in request_str:
                      send_200_close()
                   else:   
                      send_root()           # no - send root document
@@ -451,13 +445,11 @@ def handle_web(conn):
                     send_204() 
                      
                elif "OPTIONS /upload-line" in request_str:  # JSON options request
-                    if globalv.debug:
-                       print("(003) Requesting OPTIONS response")
+                    if globalv.debug: print("(003) Requesting OPTIONS response")
                     send_204()
                     
                elif len(parts) > 1:
-                    if globalv.debug:
-                       print("(002) Parts: ",parts) 
+                    if globalv.debug: print("(002) Parts: ",parts) 
                     body = parts[1]
 
                      # Parse JSON
@@ -468,14 +460,12 @@ def handle_web(conn):
                  # if msg is error, we need t clear the pattern string and stay in loop
                  # if msg is "OK" set flag to run pattern and get out of this loop
                  # the running pattern MUST sense the globalv.button_pressed for a mode change
-                       if globalv.debug is True: 
-                          print("Browser is done sending")
+                       if globalv.debug is True: print("Browser is done sending")
                           
                        if G.in_block > 0:  # Are blocks still open??
                           error     = "! Block" + str(G.in_block) + " left open"
                           G.pattern = ""
-                          if globalv.debug is True: 
-                             print(error)
+                          if globalv.debug is True: print(error)
                              
                           send_200(error)   # yes - send back a reply
                        else:
@@ -516,6 +506,8 @@ def handle_web(conn):
 def get_pattern():
     global conn, wpage, pagel, rc
     
+    print("Entering Pattern mode")
+    
     WS.start_server("ALL",UP)
     WS.set_poll_services()
     filenam = "pattern.html"
@@ -546,29 +538,29 @@ def get_pattern():
              WS.http_sock.setblocking(True)   # once we get a connection, never do a time out (Blocking)  
             
 #             while globalv.button_pressed is False:   #  remote control mode....
-             if globalv.debug is True:
-                print("going to handle the web...")
+             if globalv.debug is True:  print("going to handle the web...")
              G.clear_pattern()    # clear pattern data from memory
+             pattern_ready = False   # signify that no pattern is in memory
              gc.collect()
-             Platform.motor.drive(0,0)      # Make sure motors are stopped
+             globalv.Platform.motor.drive(0,0)      # Make sure motors are stopped
              rc = handle_web(WS.client)     # handle the conversation from client
                                                 # everything is handled there
              if rc == error_func("BROWSER_CLOSED") or rc == error_func("INVALID_COMMAND"):     # we come back here after hanling the web, many things can happen there
                                                        # browser closing is normal, we will wait for another connection here
                 WS.client.close()      # close the connection
                 gc.collect()              # collect garbage - python like to make garbage
-#                rc = NORMAL               # its ok forr browser to close
-                break         # get out of main loop
+#                if rc == error_func("BROWSER_CLOSED"):
+                rc = NORMAL               # its ok forr browser to close
+#                break         # get out of main loop
                       
              if rc != NORMAL:
                 print(error_func(rc), rc)
              else:
-                while globalv.button_pressed is False and rc == NORMAL:
+                while globalv.button_pressed is False and rc == NORMAL and pattern_ready:
                       run_pattern(0)  # begin to run pattern at index 0
 
     if globalv.button_pressed is True:
        x = WS.start_server("ALL",DOWN)  # shut things down, dont care about return code
        G.clear_pattern()    # clear pattern data from memory   
        gc.collect()
-
     return rc                 # go back with a return code

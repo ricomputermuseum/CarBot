@@ -1,16 +1,17 @@
-#^ CMD_FUNCS.PY **************************************************************************
-# *                Rhode Island Computer Museum (RICM)
-# *                        RICM CarBot
-# * Version: 1.0
-# * Date: 3/12/2026
-# * By: Ray Young
-# * For: Rhode Island Computer Museum (RICM)
-# *
-# * This module is where all the routines are for the PATTERN function
-# * The function name need to apear in the CMD_TABLE.PY so that the table can locate
-# * the correct process to run when they apear in the pattern file
-# * A repeat function is being worked on here but currently not implimented
-#~ ***************************************************************************************
+#^ CMD_FUNCS.PY *************************************************************************
+# *			Rhode Island Computer Museum (RICM)				*
+# *				PICO ROBOT CAR						*
+# * Version: 1.0									*
+# * Date: 3/12/2026									*
+# * By: Ray Young									*
+# * For: Rhode Island Computer Museum (RICM)						*
+# *											*
+# * This module is where all the routines are for the PATTERN function			*
+# * The function name need to apear in the CMD_TABLE.PY so that the table can locate	*
+# * the correct process to run when they apear in the pattern file			*
+# * A repeat function is being worked on here but currently not implimented		*
+# *											*
+#~ **************************************************************************************
 import globalv
 import cmd_GVar as G
 import time

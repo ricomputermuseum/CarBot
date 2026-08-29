@@ -1,12 +1,10 @@
-#^ cmd_GVar.py***************************************************************************
+#^ cmd_GVar.py     Pattern mode global variables-----------------------------------------
 # *			Rhode Island Computer Museum (RICM)
-# *			        RICM CarBot
+# *				PICO ROBOT CAR
 # * Version: 1.0
 # * Date: 3/12/2026
 # * By: Ray Young
-# * For: Rhode Island Computer Museum (RICM)
-# *
-# Pattern mode global variables ----------------------------
+# * For: Rhode Island Computer Museum
 #
 # This file is needed for the pattern mode. The pattern mode heavily utilizes pointers
 # usually singe byte pointers which would yeild up to 256 different commands.
@@ -19,7 +17,7 @@
 #                                                                  |-----cmd_max
 #                                                                  |-----cmd_xbyte
 #                                                                  |-----cmd_function
-# * pat_ptr are merely pointers into the pattern string
+# *_pat_ptr are merely pointers into the pattern string
 #
 # pat_cmd is an index into CMD_TABLE same as cmd_Gvar_ptr
 # pat_var are 1 or two bytes indicating a 8 or 16 bit integer
@@ -30,7 +28,7 @@
 # cmd_max is the maximum value for a command
 # cmd_xbyte is how many more bytes is needed after the command
 # cmd_function is a pointer to the function that handles the actual command when running
-#~ **************************************************************************************
+#~ --------------------------------------------------------------------------------------
 
 pattern       = ""    # actual pattern string in memory
 prv_pat_ptr   = 0     # prev command for repeat func

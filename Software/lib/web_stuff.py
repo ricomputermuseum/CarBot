@@ -1,6 +1,6 @@
 #^ WEB_STUFF.py *********************************************************************
-# *                 WiFi AP, Web Server, DNS server
-# *                            RICM CarBot
+# * Contains GLOBAL VALUES across all modules
+# *
 # * Version: 1.0
 # * Date:    3/20/2026
 # * By:      Ray Young
@@ -13,13 +13,12 @@
 # * HTTPS is a bear to impliment on a PICO due to sooooo many different methods 
 # * that various browsers use. The PICO also has limited resources, and in micropython,
 # * is not full featured.
-# * HTTPS needs time settings must be accurate as well to ensure certs keep working.
+# * The time settings must be accurate as well to ensure certs keep working.
 # * I tried to impliment a simple DNS server to handle DNS requests, but most 
 # * browswer want to use HTTPS. If a domain name ends with  .com, .net, .org or other 
-# * such popular domains, a web browser will want to use HTTPS. The answer was to use
-# * a ".run" domain. With HTTPS, Security certificates must be periodically updated, 
+# * such popular domains, a webserver willl want to use HTTPS. the answer was to use
+# * a .run domain. with HTTPS, Security certificates must be periodically updated, 
 # * some browsers complain about self-generated certificates as well
-# * So, HTTPS is NOT implimented
 #~ **********************************************************************************
 import machine
 import globalv

@@ -1,25 +1,27 @@
 #^ REMOTE.PY ************************************************************************
-# *                      Remote control via web browser
-# * Version: 1.0
-# * Date:    4/12/2026
-# * By:      Ray Young
-# * For:     Rhode Island Computer Museum (RICM)
-# *
-# * Logic: Starts a WiFi accees point with SSID specified in globalv module
-# *        Password is same as SSID
-# *        Starts a Web server on Port 80. Only 1 client connection allowed
-# *        Stats a DNS server to allow "RICM.XXX" to be used as URL
-# *        Once a browser connects, it will display a joystick type of interface
-# *
-# * Entry Point:   RemoteMode(motor):   (motor driver instance)
-# *
-# * Check return_codes.py for all available return codes from this module
-# * Dependants: network
-# *             socket
-# *             globalv
-# *             web_stuff
-# *             gc
-# *             return_codes
+# *                      Remote control via web browser                             *
+# * Version: 1.0                                                                    *
+# * Date:    4/12/2026                                                              *
+# * By:      Ray Youg                                                               *
+# * For:     Rhode Island Computer Museum (RICM)                                    *
+# *                                                                                 *
+# * Logic: Starts a WiFi accees point with SSID specified in globalv module         *
+# *        Password is same as SSID                                                 *
+# *        Starts a Web server on Port 80. Only 1 client connection allowed         *
+# *        Stats a DNS server to allow "RICM.XXX" to be used as URL                 *
+# *        Once a browser connects, it will display a joystick type of interface    *
+# *                                                                                 *
+# *                                                                                 *
+# * Entry Point:   RemoteMode(motor):   (motor driver instance)                     *
+# *                                                                                 *
+# * Check return_codes.py for all available return codes from this module           *
+# * Dependants: network                                                             *
+# *             socket                                                              *
+# *             globalv                                                             *
+# *             web_stuff                                                           *
+# *             gc                                                                  *
+# *             return_codes                                                        *
+# *                                                                                 *
 #~ **********************************************************************************
 import network          # standard Micropython
 import socket           # standard Micropython
@@ -32,6 +34,8 @@ rc   = RC.NORMAL      # Initialize default global return code
 
 UP   = True
 DOWN = False
+
+motor = globalv.Platform.motor   # bring in Motor driver as motor
 
 def inet_aton(addr):   # takes a ip addr "x.x.x.x" and turns it into a binary format, tuple
     return bytes(map(int, addr.split(".")))
@@ -183,7 +187,7 @@ def handle_client(conn,motor):
                 rc = RC.MODE_CHANGE                    # tes - set Return code, and terminate While loop
                    
     if globalv.debug is True:
-       print("Return Code from handle_client():",rc)
+       print("Return Code from Handle_client():",rc)
 #    x = input("Paused before return......")
     return rc
   
@@ -206,7 +210,7 @@ def handle_client(conn,motor):
 # * ALL Web services are terminated, memory is reclaimed, and
 # * it returns to the MAIN.PY with a return code           
 # *                                                              
-def RemoteMode(motor):
+def RemoteMode():
 #~ ***************************************************************
     global conn, wpage, pagel, rc
     
@@ -215,7 +219,7 @@ def RemoteMode(motor):
     page2load = "remote.html"                                 
     print("Entering REMOTE mode.")
     abort = False
-    ds = 0   
+    ds = 0
 # load web page into memory 
     with open(page2load,"r") as page:  # read web page into memoryimport uos
          wpage   = page.read()

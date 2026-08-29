@@ -1,14 +1,14 @@
-#^ RICMBOARD.PY *********************************************************************
-# *                      RICM board Platform 
-# * Version: 1.0
-# * Date:    3/20/2026
-# * By:      Ray Young
-# * For:     Rhode Island Computer Museum (RICM)
-# *
-# * Purpose: Establishes which platform we are using
-# *
-# * Also pulls in correct motor driver for platform
-#~ **********************************************************************************
+#^ RICMBOARD.PY **********************************************************************
+# *                      RICM board Platform                                        *
+# * Version: 1.0                                                                    *
+# * Date:    3/20/2026                                                              *
+# * By:      Ray Youg                                                               *
+# * For:     Rhode Island Computer Museum (RICM)                                    *
+# *                                                                                 *
+# * Purpose: Establishes which platform we are using                                *
+# *                                                                                 *
+# * Also pulls in correct motor driver for platform                                 *
+#~ ***********************************************************************************
 from machine import Timer, Pin
 import globalv
 import L9110 as motor   # using the L9110 motor driver

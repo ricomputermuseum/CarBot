@@ -1,4 +1,4 @@
-#^ RICMMODE.PY **********************************************************************
+#^ RICMMODE.PY ---------------------------------------------------------------------
 # *                    RICM Mode change functions
 # * Version: 1.0
 # * Date:    3/20/2026
@@ -10,17 +10,18 @@
 # * global variable BUTTON_PRESSED is set when the mode change button is pressed
 # * Any running mode needs to check this variable to determine when to exit
 # * Any mode cleanup is done by the mode that was running
-#~ **********************************************************************************
+#~ --------------------------------------------------------------------------------
 from machine import Timer, Pin
 import time
 import globalv
-# --------------------------------------------------------------------
-#                  Blink New mode via independant timer
-# --------------------------------------------------------------------
-led2   = Pin("LED", Pin.OUT)  # use onboard PICO LED for mode display
-xblink = globalv.new_mode*2   # temp value it holds cur_mode * 2 (on/off cycle)
-xdelay = 6
-xpause = xdelay   # period times to pause between blinks
+# 
+# ------------------- Blink New mode via timer 
+#
+led2     = Pin("LED", Pin.OUT)  # use onboard PICO LED for mode display
+xblink   = globalv.new_mode*2   # temp value it holds cur_mode * 2 (on/off cycle)
+xdelay   = 6
+xpause   = xdelay   # period times to pause between blinks
+in_flash = False
 
 #^ toggle_led ----------------------------------------------------
 # This is called every PERIOD as defined by INIT function
@@ -77,11 +78,12 @@ def fast_toggle(timer):
 # it will override the mode flashing timer  
 # 
 def flashit():
+    global in_flash
 #~ ---------------------------------------------------------------
     if in_flash is False:
        blinkt.deinit()  # stop normal blinking
        blinkt.init(mode=Timer.PERIODIC, period=50, callback=fast_toggle)
-       in_flasn = True
+       in_flash = True
     return
     
 # ----------------------------------------- end blink code -----------------------------------       

@@ -1,26 +1,26 @@
 #^ L9110.py *************************************************************************
-# *                      L9220 Motor Driver for Pico-W
-# * Version: 1.0
-# * Date: 3/20/2026
-# * By: Ray Young
-# * For: Rhode Island Computer Museum (RICM)
-# *
-# * Logic: Motor driver has two parts:
-# *        1 - Motor initialization  (init)
-# *        2 - Motor Drive           (drive)
-# *
-# * Motors are connected via GPIO pins.This driver uses 2 pins for each driver
-# * Left L9110  Connected to GPIO-21 (pin-27) & GPIO-20 (pin-26)
-# * Right l9110 connected to GPIO-19 (pin-25) & GPIO-18 (pin-24)
-# * To drive motors, each motor gets a value of -100 to 100 with 0 bring stop
-# * Because of limitations of the Pico, values will be in increments of 10
-# * The driver will use these values to drive each motor.
-# *
-# * Use a return code to indicate sucess (0) or failure (negative value)
-# * So calling program can determine
-# *
-# * Future versions may include a tachometer function to keep motors in sync
-# *
+# *                      L9220 Motor Driver for Pico-2W                             *
+# * Version: 1.0                                                                    *
+# * Date: 3/20/2026                                                                 *
+# * By: Ray Youg                                                                    *
+# * For: Rhode Island Computer Museum (RICM)                                        *
+# *                                                                                 *
+# * Logic: Motor driver has two parts:                                              *
+# *        1 - Motor initialization  (init)                                         *
+# *        2 - Motor Drive           (drive)                                        *
+# *                                                                                 *
+# * Motors are connected via GPIO pins.This driver uses 2 pins for each driver      *
+# * Left L9110  Connected to GPIO-21 (pin-27) & GPIO-20 (pin-26)                    *
+# * Right l9110 connected to GPIO-19 (pin-25) & GPIO-18 (pin-24)                    *
+# * To drive motors, each motor gets a value of -100 to 100 with 0 bring stop       *
+# * Because of limitations of the Pico, values will be in increments of 10          *
+# * The driver will use these values to drive each motor.                           *
+# *                                                                                 *
+# * Use a return code to indicate sucess (0) or failure (negative value)            *
+# * So calling program can determine                                                *
+# *                                                                                 *
+# * Future versions may include a tachometer function to keep motors in sync        *
+# *                                                                                 *
 #~ **********************************************************************************
 from machine import Pin, PWM
 import globalv as G
@@ -63,8 +63,8 @@ def drive(d, t):
     # For a two-wheeled robot, the X and Y inputs are converted into left and right wheel speeds.
     # y = Throttle
     # x = Differential
-    Rwheel  = t + d          # do wheel diffential
-    Lwheel  = t - d
+    Rwheel  = t + d          # do wheel diffential                                                            
+    Lwheel  = t - d                                                                       
       
     # Dont exceed limits of motor controller
     Lwheel = max(-100, min(100, Lwheel))
@@ -88,3 +88,5 @@ def drive(d, t):
        LwheelB.duty_u16(1-Lwheel)
     
     return 0      # Zero indicates sucess, negative value means error, positive values mean valid response codes
+
+# --------------------------------------------- END DRIVER SECTION ----------------------------------------------
