@@ -2,7 +2,7 @@
 # *                      RICM board Platform                                        *
 # * Version: 1.0                                                                    *
 # * Date:    3/20/2026                                                              *
-# * By:      Ray Youg                                                               *
+# * By:      Ray Young                                                               *
 # * For:     Rhode Island Computer Museum (RICM)                                    *
 # *                                                                                 *
 # * Purpose: Establishes which platform we are using                                *
