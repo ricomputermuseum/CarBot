@@ -2,7 +2,7 @@
 # *                      Pattern follow Module                                          *
 # * Version: 1.0                                                                        *
 # * Date:    6/17/2026                                                                  *
-# * By:      Ray Youg                                                                   *
+# * By:      Ray Young                                                                   *
 # * For:     Rhode Island Computer Museum (RICM)                                        *
 # *                                                                                     *
 # * Logic: get_pattern() in this module is the main function that gets                  *  
