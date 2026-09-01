@@ -2,7 +2,7 @@
 # *                      L9220 Motor Driver for Pico-2W                             *
 # * Version: 1.0                                                                    *
 # * Date: 3/20/2026                                                                 *
-# * By: Ray Youg                                                                    *
+# * By: Ray Young                                                                    *
 # * For: Rhode Island Computer Museum (RICM)                                        *
 # *                                                                                 *
 # * Logic: Motor driver has two parts:                                              *
