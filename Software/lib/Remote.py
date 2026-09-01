@@ -2,7 +2,7 @@
 # *                      Remote control via web browser                             *
 # * Version: 1.0                                                                    *
 # * Date:    4/12/2026                                                              *
-# * By:      Ray Youg                                                               *
+# * By:      Ray Young                                                               *
 # * For:     Rhode Island Computer Museum (RICM)                                    *
 # *                                                                                 *
 # * Logic: Starts a WiFi accees point with SSID specified in globalv module         *
