@@ -18,7 +18,7 @@
 # *        or background intensity
 # *
 # * Return code is always 0
-# * Entry Point:   LF_run()
+# * Entry Point: LF_run()
 # *
 # * Dependants: 
 # *             globalv
