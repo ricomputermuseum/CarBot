@@ -18,12 +18,13 @@
 # *        or background intensity
 # *
 # * Return code is always 0
-# * Entry Point: LF_run()
+# * Entry Point:   LF_run()
 # *
 # * Dependants: 
 # *             globalv
 #~ --------------------------------------------------------------------------------------
 
+from machine import Pin,ADC
 import globalv
 
 LFLED = Pin(16, Pin.OUT)    # Line Following LED Light Pin
@@ -31,7 +32,7 @@ LFLED = Pin(16, Pin.OUT)    # Line Following LED Light Pin
 LADC = machine.ADC(1)  # Which ADC to use for Left side LDR Sensor
 RADC = machine.ADC(2)  # Which ADC to use for Right side LDR Sensor
 
-def LF_run:
+def LF_run():
     AccumL = LADC.read_u16() / 256   # Initialize values. Read returns 0-65,535 value
     AccumR = RADC.read_u16() / 256   #    reduce resolution it to 0-255
     LFLED.value(1)   #  and turn LEDs on
@@ -40,14 +41,14 @@ def LF_run:
           SenseL = LADC.read_u16()   # read current L & R sensor values
           SenseR = RADC.read_u16()   #   0 - 65,535 value = 0 to 3.3v
       
-          LV = float(SenseL) - AccumL)   # calculate blk/white diff
-          RV = float(SenseR) - AccumR)
+          LV = float(SenseL) - AccumL   # calculate blk/white diff
+          RV = float(SenseR) - AccumR
       
           if LV > RV:    # should we move to left?
              motor(50,100)     #  Yes  
           elif LV < RV:  # Should we move to right?
-               motor(-50,100)  #  Yes
-          else                 # Neither, stay on course 
+             motor(-50,100)  #  Yes
+          else:                 # Neither, stay on course 
              motor(0,100)      #  move forward           
                   # Re-calculate average ground color readings against which to detect sudden changes
              AccumL = (AccumL * 255 + SenseL) / 256   # make the range 0-256
