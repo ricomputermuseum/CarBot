@@ -24,13 +24,13 @@
 # *             globalv
 #~ --------------------------------------------------------------------------------------
 
-from machine import Pin,ADC
+from machine import Pin, ADC
 import globalv
 
 LFLED = Pin(16, Pin.OUT)    # Line Following LED Light Pin
 
-LADC = machine.ADC(1)  # Which ADC to use for Left side LDR Sensor
-RADC = machine.ADC(2)  # Which ADC to use for Right side LDR Sensor
+LADC = ADC(1)  # Which ADC to use for Left side LDR Sensor
+RADC = ADC(2)  # Which ADC to use for Right side LDR Sensor
 
 def LF_run():
     AccumL = LADC.read_u16() / 256   # Initialize values. Read returns 0-65,535 value
